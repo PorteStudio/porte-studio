@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;1,400;1,500&family=Marcellus&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html{ scroll-behavior:smooth; }
+  body{ font-family:'Jost',sans-serif; background:#8b8074; -webkit-font-smoothing:antialiased; }
+  ::selection{ background:rgba(45,41,34,0.18); }
+  @keyframes fadeUp{ from{ opacity:0; transform:translateY(18px);} to{ opacity:1; transform:translateY(0);} }
+  @keyframes fadeIn{ from{ opacity:0;} to{ opacity:1;} }
+  a{ color:inherit; text-decoration:none; }
+  .nav-link{ position:relative; }
+  .nav-link::after{ content:''; position:absolute; left:0; bottom:0; height:1px; width:100%; background:currentColor; transform:scaleX(0); transform-origin:left center; transition:transform .25s ease-in-out; }
+  .nav-link:hover::after{ transform:scaleX(1); }
+  body *{ transition: opacity .25s ease-in-out, background-color .25s ease-in-out, color .25s ease-in-out, border-color .25s ease-in-out, box-shadow .25s ease-in-out; }
+  input::placeholder, textarea::placeholder{ color:rgba(45,41,34,0.4); }
+  .pe-italic{ font-family:'Cormorant Garamond',serif; font-style:italic; font-weight:500; font-size:1.08em; letter-spacing:0.005em; }
+  @keyframes slowZoom{ from{ transform:scale(1.0);} to{ transform:scale(1.075);} }
+  @keyframes plReveal{ 0%,68%{ transform:translateY(0);} 100%{ transform:translateY(-101%);} }
+  @keyframes plName{ 0%{ opacity:0; letter-spacing:0.18em;} 28%{ opacity:1; letter-spacing:0.5em;} 60%{ opacity:1; letter-spacing:0.5em;} 84%{ opacity:0;} 100%{ opacity:0;} }
+  @keyframes plLine{ 0%{ transform:scaleX(0);} 46%{ transform:scaleX(1);} 70%{ transform:scaleX(1);} 92%{ transform:scaleX(0);} 100%{ transform:scaleX(0);} }
+  @keyframes pageIn{ from{ opacity:0; transform:translateY(18px);} to{ opacity:1; transform:translateY(0);} }
+  @keyframes bob{ 0%,100%{ transform:translateY(0); opacity:0.45;} 50%{ transform:translateY(7px); opacity:0.85;} }
+</style>
+</helmet>
+
+<div style="{{ rootVars }}"><div style="background:var(--bg,#8b8074); color:var(--ink,#2d2922); min-height:100vh; font-family:'Jost',sans-serif;">
+
+  <div style="position:fixed; inset:0; z-index:200; background:var(--bg-deep,#7d7367); display:flex; flex-direction:column; align-items:center; justify-content:center; animation:plReveal 2.7s cubic-bezier(0.76,0,0.24,1) forwards; will-change:transform;">
+    <div style="font-family:'Marcellus',serif; color:var(--cream,#efeae3); font-size:clamp(20px,2.6vw,32px); letter-spacing:0.5em; padding-left:0.5em; animation:plName 2.7s ease forwards;">PORTE STUDIO</div>
+    <div style="margin-top:26px; width:128px; height:1px; background:rgba(239,234,227,0.7); transform-origin:center; animation:plLine 2.7s ease forwards;"></div>
+  </div>
+
+
+  <header style="position:sticky; top:0; z-index:50; display:flex; align-items:center; justify-content:space-between; padding:22px 6vw; background:var(--bg,#8b8074); color:var(--cream,#efeae3); border-bottom:1px solid var(--line-light,rgba(239,234,227,0.18));">
+    <div onClick="{{ goHome }}" style="font-size:15px; letter-spacing:0.32em; cursor:pointer; font-weight:400; white-space:nowrap;">PORTE STUDIO</div>
+    <nav style="display:flex; gap:34px; font-size:11.5px; letter-spacing:0.26em;">
+      <div onClick="{{ goServices }}" class="nav-link" style="cursor:pointer; opacity:0.85; position:relative; padding-bottom:4px; transition:opacity .25s ease-in-out;" style-hover="opacity:1;">SERVICES</div>
+      <div onClick="{{ goWork }}" class="nav-link" style="cursor:pointer; opacity:0.85; position:relative; padding-bottom:4px; transition:opacity .25s ease-in-out;" style-hover="opacity:1;">WORK</div>
+      <div onClick="{{ goAbout }}" class="nav-link" style="cursor:pointer; opacity:0.85; position:relative; padding-bottom:4px; transition:opacity .25s ease-in-out;" style-hover="opacity:1;">ABOUT</div>
+      <div onClick="{{ goContact }}" class="nav-link" style="cursor:pointer; opacity:0.85; position:relative; padding-bottom:4px; transition:opacity .25s ease-in-out;" style-hover="opacity:1;">CONTACT</div>
+    </nav>
+  </header>
+
+  <main>
+
+    <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+      <section style="position:relative; overflow:hidden; min-height:90vh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:14vh 6vw; background:#7d7367; color:var(--cream,#efeae3); animation:pageIn .6s cubic-bezier(.2,.7,.2,1) both;">
+        <img src="https://images.unsplash.com/photo-1486718448742-163732cd1544?auto=format&fit=crop&w=2100&q=80" alt="" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; filter:grayscale(0.55) sepia(0.22) saturate(0.7) contrast(1.03) brightness(0.74); transform-origin:center; animation:slowZoom 24s ease-out forwards;" />
+        <div style="position:absolute; inset:0; background:rgba(0,0,0,0.35);"></div>
+        <div style="position:relative; max-width:1200px; text-shadow:0 1px 3px rgba(18,15,11,0.55), 0 2px 30px rgba(18,15,11,0.6);">
+          <h1 style="font-family:'Marcellus',serif; font-weight:400; font-size:clamp(26px,3.7vw,56px); line-height:1.12; letter-spacing:0.04em; color:var(--cream,#efeae3);">For businesses ready to grow.</h1>
+          <p style="margin:26px auto 0; font-weight:500; font-size:14px; letter-spacing:0.3em; opacity:1; color:var(--cream,#efeae3);">PORTE STUDIO &middot; BOUTIQUE MARKETING CONSULTANCY</p>
+          <div style="display:flex; gap:32px; justify-content:center; margin-top:42px; flex-wrap:wrap; font-size:11px; letter-spacing:0.24em; font-weight:500;">
+            <div onClick="{{ goServices }}" style="cursor:pointer; color:var(--cream,#efeae3); border-bottom:1px solid rgba(239,234,227,0.55); padding-bottom:6px;" style-hover="opacity:0.65;">VIEW SERVICES</div>
+            <div onClick="{{ goContact }}" style="cursor:pointer; color:var(--cream,#efeae3); border-bottom:1px solid rgba(239,234,227,0.55); padding-bottom:6px;" style-hover="opacity:0.65;">BOOK A DISCOVERY CALL</div>
+          </div>
+        </div>
+        <div style="position:absolute; bottom:30px; left:50%; transform:translateX(-50%); width:1px; height:38px; background:linear-gradient(rgba(239,234,227,0.85), rgba(239,234,227,0)); animation:bob 2.6s ease-in-out infinite;"></div>
+      </section>
+
+      <section style="background:var(--bone,#ece7df); color:var(--ink,#2d2922); padding:13vh 6vw;">
+        <div style="max-width:1100px; margin:0 auto;">
+          <div style="font-size:11px; letter-spacing:0.3em; color:var(--ink-soft,#6b655c); margin-bottom:46px;">( WHAT WE DO )</div>
+          <p style="font-family:'Marcellus',serif; font-size:clamp(26px,3vw,46px); line-height:1.32; letter-spacing:0.005em; max-width:24ch;">We help ambitious businesses look sharper, sell smarter and grow with <span class="pe-italic">intention.</span></p>
+          <p style="margin-top:40px; max-width:58ch; font-weight:300; font-size:22px; line-height:1.85; color:var(--ink-soft,#6b655c);">Most growing businesses don't have a marketing problem. They have a clarity problem. We bring strategy, brand and communications together so the whole business finally pulls in one direction.</p>
+        </div>
+      </section>
+
+      <section style="background:var(--bone-2,#f4f1ea); color:var(--ink,#2d2922); padding:12vh 6vw;">
+        <div style="max-width:1100px; margin:0 auto;">
+          <div style="display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:54px; flex-wrap:wrap; gap:20px;">
+            <div>
+              <div style="font-size:11px; letter-spacing:0.3em; color:var(--ink-soft,#6b655c); margin-bottom:18px;">( SERVICES )</div>
+              <h2 style="font-family:'Marcellus',serif; font-weight:400; font-size:clamp(28px,3vw,42px);">Four areas of focus</h2>
+            </div>
+            <div onClick="{{ goServices }}" style="cursor:pointer; font-size:11px; letter-spacing:0.24em; border-bottom:1px solid var(--ink,#2d2922); padding-bottom:5px;" style-hover="opacity:0.6;">ALL SERVICES →</div>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--line,rgba(45,41,34,0.12));">
+            <div style="background:var(--bone-2,#f4f1ea); padding:38px 34px;"><div style="font-family:'Jost'; font-size:12px; color:var(--accent,#9a6f54); letter-spacing:0.2em; margin-bottom:14px;">01</div><h3 style="font-family:'Marcellus',serif; font-weight:400; font-size:23px; margin-bottom:12px;">Marketing Strategy &amp; Campaigns</h3><p style="font-weight:300; font-size:16px; line-height:1.75; color:var(--ink-soft,#6b655c);">Campaign planning and execution that connects brand, audience and revenue.</p></div>
+            <div style="background:var(--bone-2,#f4f1ea); padding:38px 34px;"><div style="font-family:'Jost'; font-size:12px; color:var(--accent,#9a6f54); letter-spacing:0.2em; margin-bottom:14px;">02</div><h3 style="font-family:'Marcellus',serif; font-weight:400; font-size:23px; margin-bottom:12px;">CRM, Email &amp; Customer Lifecycle</h3><p style="font-weight:300; font-size:16px; line-height:1.75; color:var(--ink-soft,#6b655c);">Building systems that nurture, convert and retain customers.</p></div>
+            <div style="background:var(--bone-2,#f4f1ea); padding:38px 34px;"><div style="font-family:'Jost'; font-size:12px; color:var(--accent,#9a6f54); letter-spacing:0.2em; margin-bottom:14px;">03</div><h3 style="font-family:'Marcellus',serif; font-weight:400; font-size:23px; margin-bottom:12px;">Brand, Content &amp; Communications</h3><p style="font-weight:300; font-size:16px; line-height:1.75; color:var(--ink-soft,#6b655c);">Defining brand voice and creating content that connects with the right audience.</p></div>
+            <div style="background:var(--bone-2,#f4f1ea); padding:38px 34px;"><div style="font-family:'Jost'; font-size:12px; color:var(--accent,#9a6f54); letter-spacing:0.2em; margin-bottom:14px;">04</div><h3 style="font-family:'Marcellus',serif; font-weight:400; font-size:23px; margin-bottom:12px;">Digital Marketing &amp; Growth</h3><p style="font-weight:300; font-size:16px; line-height:1.75; color:var(--ink-soft,#6b655c);">Optimising digital channels to drive traffic, engagement and conversion.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <section style="background:var(--bg,#8b8074); color:var(--cream,#efeae3); padding:13vh 6vw;">
+        <div style="max-width:1100px; margin:0 auto;">
+          <div style="font-size:11px; letter-spacing:0.3em; opacity:0.65; margin-bottom:46px;">( SELECTED WORK )</div>
+          <div onClick="{{ goWork }}" style="cursor:pointer; display:grid; grid-template-columns:1.1fr 1fr; gap:50px; align-items:center;">
+            <div style="position:relative; overflow:hidden; aspect-ratio:4/3; background:#968b7e;"><img src="https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?auto=format&fit=crop&w=1100&q=80" alt="" loading="lazy" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; filter:grayscale(0.5) sepia(0.2) saturate(0.72) contrast(1.08) brightness(0.82);" /><div style="position:absolute; inset:0; background:linear-gradient(160deg, rgba(45,41,34,0.34), rgba(34,30,24,0.52)); mix-blend-mode:multiply;"></div></div>
+            <div>
+              <div style="font-size:11px; letter-spacing:0.24em; opacity:0.6; margin-bottom:18px;">LANDSCAPING · TRADE SERVICES</div>
+              <h3 style="font-family:'Marcellus',serif; font-weight:400; font-size:clamp(30px,3.4vw,48px); line-height:1.18;">Black Gum Landscaping</h3>
+              <p style="margin-top:24px; max-width:42ch; font-weight:300; font-size:20px; line-height:1.8; opacity:0.82;">An enhanced sales process, uplifted brand and a new CRM with powerful automation and billable quoting, built to scale a growing trade business.</p>
+              <div style="margin-top:34px; font-size:11px; letter-spacing:0.24em; border-bottom:1px solid var(--line-light,rgba(239,234,227,0.5)); display:inline-block; padding-bottom:5px; cursor:pointer;" style-hover="opacity:0.62;">READ THE CASE STUDY →</div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </sc-if>
+
+    <sc-if value="{{ isServices }}" hint-placeholder-val="{{ true }}">
+      <div data-screen-label="Services" style="animation:pageIn .6s cubic-bezier(.2,.7,.2,1) both;">
+        <section style="background:var(--bg,#8b8074); color:var(--cream,#efeae3); padding:16vh 6vw 12vh;">
+          <div style="max-width:1100px; margin:0 auto;">
+            <div style="font-size:11px; letter-spacing:0.3em; opacity:0.65; margin-bottom:34px;">( SERVICES )</div>
+            <h1 style="font-family:'Marcellus',serif; font-weight:400; font-size:clamp(40px,5vw,76px); line-height:1.08;">What we do</h1>
+            <p style="margin-top:34px; max-width:54ch; font-weight:300; font-size:22px; line-height:1.85; opacity:0.82;">A full-service marketing partner for ambitious, growing businesses. We work across strategy, brand, systems and growth, choosing only what moves your business forward.</p>
+          </div>
+        </section>
+
+        <section style="background:var(--bone,#ece7df); color:var(--ink,#2d2922); padding:4vh 6vw 6vh;">
+          <div style="max-width:1100px; margin:0 auto;">
+
+            <div style="display:grid; grid-template-columns:0.9fr 1.1fr; gap:48px; padding:7vh 0; border-top:1px solid var(--line,rgba(45,41,34,0.14));">
+              <div>
+                <div style="font-family:'Marcellus',serif; font-size:15px; color:var(--accent,#9a6f54); letter-spacing:0.1em; margin-bottom:22px;">01 / STRATEGY</div>
+                <h2 style="font-family:'Marcellus',serif; font-weight:400; font-size:clamp(26px,2.6vw,36px); line-height:1.2;">Marketing Strategy &amp; Campaigns</h2>
+                <p style="margin-top:20px; max-width:34ch; font-weight:300; font-size:20px; line-height:1.8; color:var(--ink-soft,#6b655c);">Campaign planning and execution that connects brand, audience and revenue.</p>
+              </div>
+              <div style="display:flex; flex-direction:column;">
+                <div style="padding:18px 0; border-bottom:1px solid var(--line,rgba(45,41,34,0.12)); font-weight:300; font-size:20px;">Multi-channel campaign strategy</div>
+                <div style="padding:18px 0; border-bottom:1px solid var(--line,rgba(45,41,34,0.12)); font-weight:300; font-size:20px;">End-to-end go-to-market planning</div>
+                <div style="padding:18px 0; border-bottom:1px solid var(--line,rgba(45,41,34,0.12)); font-weight:300; font-size:20px;">Promotions, launches &amp; seasonal campaigns</div>
+                <div style="padding:18px 0; border-bottom:1px solid var(--line,rgba(45,41,34,0.12)); font-weight:300; font-size:20px;">Campaign messaging &amp; creative direction</div>
+                <div style="padding:18px 0; font-weight:300; font-size:20px;">Campaign performance reporting &amp; optimisation</div>
+              </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:0.9fr 1.1fr; gap:48px; padding:7vh 0; border-top:1px solid var(--line,rgba(45,41,34,0.14));">
+              <div>
+                <div style="font-family:'Marcellus',serif; font-size:15px; color:var(--accent,#9a6f54); letter-spacing:0.1em; margin-bottom:22px;">02 / LIFECYCLE</div>
+                <h2 style="font-family:'Marcellus',serif; font-weight:400; font-size:clamp(26px,2.6vw,36px); line-height:1.2;">CRM, Email &amp; Customer Lifecycle</h2>
+                <p style="margin-top:20px; max-width:34ch; font-weight:300; font-size:20px; line-height:1.8; color:var(--ink-soft,#6b655c);">Building systems that nurture, convert and retain customers.</p>
+              </div>
+              <div style="display:flex; flex-direction:column;">
+                <div style="padding:18px 0; border-bottom:1px solid var(--line,rgba(45,41,34,0.12)); font-weight:300; font-size:20px;">CRM strategy &amp; customer journey mapping</div>
+                <div style="padding:18px 0; border-bottom:1px solid var(--line,rgba(45,41,34,0.12)); font-weight:300; font-size:20px;">Email marketing strategy &amp; automation flows</div>
+                <div style="padding:18px 0; border-bottom:1px solid var(--line,rgba(45,41,34,0.12)); font-weight:300; font-size:20px;">EDM design &amp; copywriting</div>
+                <div style="padding:18px 0; border-bottom:1px solid var(--line,rgba(45,41,34,0.12)); font-weight:300; font-size:20px;">List segmentation &amp; performance optimisation</div>
+                <div style="padding:18px 0; font-weight:300; font-size:20px;">Database growth &amp; retention strategies</div>
+              </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:0.9fr 1.1fr; gap:48px; padding:7vh 0; border-top:1px solid var(--line,rgba(45,41,34,0.14));">
+              <div>
+                <div style="font-family:'Marcellus',serif; font-size:15px; color:var(--accent,#9a6f54); letter-spacing:0.1em; margin-bottom:22px;">03 / BRAND</div>
+                <h2 style="font-family:'Marcellus',serif; font-weight:400; font-size:clamp(26px,2.6vw,36px); line-height:1.2;">Brand, Content &amp; Communications</h2>
+                <p style="margin-top:20px; max-width:34ch; font-weight:300; font-size:20px; line-height:1.8; color:var(--ink-soft,#6b655c);">Defining brand voice and creating content that connects with the right audience.</p>
+              </div>
+              <div style="display:flex; flex-direction:column;">
+                <div style="padding:18px 0; border-bottom:1px solid var(--line,rgba(45,41,34,0.12)); font-weight:300; font-size:20px;">Brand positioning &amp; messaging development</div>
+                <div style="padding:18px 0; border-bottom:1px solid var(--line,rgba(45,41,34,0.12)); font-weight:300; font-size:20px;">Tone of voice frameworks &amp; campaign storytelling</div>
+                <div style="padding:18px 0; border-bottom:1px solid var(--line,rgba(45,41,34,0.12)); font-weight:300; font-size:20px;">Website copywriting &amp; brand messaging</div>
+                <div style="padding:18px 0; border-bottom:1px solid var(--line,rgba(45,41,34,0.12)); font-weight:300; font-size:20px;">Blog, editorial &amp; long-form content</div>
+                <div style="padding:18px 0; border-bottom:1px solid var(--line,rgba(45,41,34,0.12)); font-weight:300; font-size:20px;">Organic content planning for social &amp; owned channels</div>
+                <div style="padding:18px 0; font-weight:300; font-size:20px;">Visual direction for brand assets &amp; photoshoots</div>
+              </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:0.9fr 1.1fr; gap:48px; padding:7vh 0; border-top:1px solid var(--line,rgba(45,41,34,0.14)); border-bottom:1px solid var(--line,rgba(45,41,34,0.14));">
+              <div>
+                <div style="font-family:'Marcellus',serif; font-size:15px; color:var(--accent,#9a6f54); letter-spacing:0.1em; margin-bottom:22px;">04 / GROWTH</div>
+                <h2 style="font-family:'Marcellus',serif; font-weight:400; font-size:clamp(26px,2.6vw,36px); line-height:1.2;">Digital Marketing &amp; Growth</h2>
+                <p style="margin-top:20px; max-width:34ch; font-weight:300; font-size:20px; line-height:1.8; color:var(--ink-soft,#6b655c);">Optimising digital channels to drive traffic, engagement and conversion.</p>
+              </div>
+              <div style="display:flex; flex-direction:column;">
+                <div style="padding:18px 0; border-bottom:1px solid var(--line,rgba(45,41,34,0.12)); font-weight:300; font-size:20px;">Website content optimisation &amp; updates</div>
+                <div style="padding:18px 0; border-bottom:1px solid var(--line,rgba(45,41,34,0.12)); font-weight:300; font-size:20px;">SEO content optimisation</div>
+                <div style="padding:18px 0; border-bottom:1px solid var(--line,rgba(45,41,34,0.12)); font-weight:300; font-size:20px;">Social media strategy &amp; growth planning</div>
+                <div style="padding:18px 0; border-bottom:1px solid var(--line,rgba(45,41,34,0.12)); font-weight:300; font-size:20px;">Influencer &amp; PR coordination</div>
+                <div style="padding:18px 0; border-bottom:1px solid var(--line,rgba(45,41,34,0.12)); font-weight:300; font-size:20px;">Marketing analytics &amp; performance insights</div>
+                <div style="padding:18px 0; font-weight:300; font-size:20px;">Marketing tech &amp; automation set-up</div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <section style="background:var(--bone-2,#f4f1ea); color:var(--ink,#2d2922); padding:12vh 6vw;">
+          <div style="max-width:1100px; margin:0 auto; display:grid; grid-template-columns:0.9fr 1.1fr; gap:48px; align-items:center;">
+            <div>
+              <div style="font-size:11px; letter-spacing:0.3em; color:var(--accent,#9a6f54); margin-bottom:22px;">( ALSO )</div>
+              <h2 style="font-family:'Marcellus',serif; font-weight:400; font-size:clamp(28px,3vw,44px); line-height:1.18;">Sales &amp; systems consulting</h2>
+            </div>
+            <div>
+              <p style="font-weight:300; font-size:22px; line-height:1.9; color:var(--ink-soft,#6b655c); max-width:50ch;">Built specifically for ambitious businesses. We get under the hood of how you sell, refining your sales process, setting up the right tools, and connecting marketing to revenue so growth doesn't stall at the handover.</p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isWork }}" hint-placeholder-val="{{ true }}">
+      <div data-screen-label="Case Studies" style="animation:pageIn .6s cubic-bezier(.2,.7,.2,1) both;">
+        <section style="background:var(--bg,#8b8074); color:var(--cream,#efeae3); padding:16vh 6vw 11vh;">
+          <div style="max-width:1100px; margin:0 auto;">
+            <div style="font-size:11px; letter-spacing:0.3em; opacity:0.65; margin-bottom:34px;">( SELECTED WORK )</div>
+            <h1 style="font-family:'Marcellus',serif; font-weight:400; font-size:clamp(40px,5vw,76px); line-height:1.08;">Work that earns<br>its keep</h1>
+            <p style="margin-top:34px; max-width:52ch; font-weight:300; font-size:22px; line-height:1.85; opacity:0.82;">We partner with a small number of businesses at a time. Here's a recent engagement: strategy, brand and systems, working together.</p>
+          </div>
+        </section>
+
+        <section style="background:var(--ink,#2d2922); color:var(--cream,#efeae3); padding:15vh 6vw;">
+          <div style="max-width:1200px; margin:0 auto; display:grid; grid-template-columns:1fr 1fr; gap:7vw; align-items:start;">
+
+            <div style="position:sticky; top:96px;">
+              <div style="display:flex; align-items:center; gap:12px; font-size:13.5px; font-weight:300; letter-spacing:0.02em; opacity:0.92; margin-bottom:42px;">Black Gum Landscaping <span style="font-size:15px; opacity:0.7;">&#8600;</span></div>
+              <h2 style="font-family:'Marcellus',serif; font-weight:400; font-size:clamp(32px,3.8vw,58px); line-height:1.08;">A growing trade business, <span class="pe-italic">re-engineered</span> for scale</h2>
+              <div style="display:flex; flex-wrap:wrap; gap:9px; margin-top:44px;">
+                <div style="padding:8px 15px; background:rgba(239,234,227,0.1); font-size:11.5px; letter-spacing:0.06em; font-weight:300; box-shadow:inset 0 0 0 1px rgba(239,234,227,0); transition:box-shadow .25s ease-in-out, background-color .25s ease-in-out;" style-hover="box-shadow:inset 0 0 0 1px rgba(239,234,227,0.5); background:rgba(239,234,227,0.18);">Sales Process</div>
+                <div style="padding:8px 15px; background:rgba(239,234,227,0.1); font-size:11.5px; letter-spacing:0.06em; font-weight:300; box-shadow:inset 0 0 0 1px rgba(239,234,227,0); transition:box-shadow .25s ease-in-out, background-color .25s ease-in-out;" style-hover="box-shadow:inset 0 0 0 1px rgba(239,234,227,0.5); background:rgba(239,234,227,0.18);">Brand &amp; Comms</div>
+                <div style="padding:8px 15px; background:rgba(239,234,227,0.1); font-size:11.5px; letter-spacing:0.06em; font-weight:300; box-shadow:inset 0 0 0 1px rgba(239,234,227,0); transition:box-shadow .25s ease-in-out, background-color .25s ease-in-out;" style-hover="box-shadow:inset 0 0 0 1px rgba(239,234,227,0.5); background:rgba(239,234,227,0.18);">CRM</div>
+                <div style="padding:8px 15px; background:rgba(239,234,227,0.1); font-size:11.5px; letter-spacing:0.06em; font-weight:300; box-shadow:inset 0 0 0 1px rgba(239,234,227,0); transition:box-shadow .25s ease-in-out, background-color .25s ease-in-out;" style-hover="box-shadow:inset 0 0 0 1px rgba(239,234,227,0.5); background:rgba(239,234,227,0.18);">Automation</div>
+                <div style="padding:8px 15px; background:rgba(239,234,227,0.1); font-size:11.5px; letter-spacing:0.06em; font-weight:300; box-shadow:inset 0 0 0 1px rgba(239,234,227,0); transition:box-shadow .25s ease-in-out, background-color .25s ease-in-out;" style-hover="box-shadow:inset 0 0 0 1px rgba(239,234,227,0.5); background:rgba(239,234,227,0.18);">Billable Quoting</div>
+              </div>
+            </div>
+
+            <div style="display:flex; flex-direction:column;">
+              <sc-for list="{{ caseItems }}" as="ci" hint-placeholder-count="4">
+                <div style="border-top:1px solid rgba(239,234,227,0.16);">
+                  <div onClick="{{ ci.toggle }}" style="cursor:pointer; display:flex; align-items:center; justify-content:space-between; gap:24px; padding:30px 0;" style-hover="opacity:0.82;">
+                    <div style="font-family:'Marcellus',serif; font-weight:400; font-size:clamp(21px,1.7vw,28px); line-height:1.1;">{{ ci.title }}</div>
+                    <div style="flex:none; width:30px; height:30px; border-radius:50%; border:1px solid {{ ci.iconBorder }}; background:{{ ci.iconBg }}; color:{{ ci.iconColor }}; display:flex; align-items:center; justify-content:center; font-size:14px; line-height:1;">{{ ci.iconGlyph }}</div>
+                  </div>
+                  <sc-if value="{{ ci.open }}" hint-placeholder-val="{{ true }}">
+                    <div style="padding:0 0 32px; max-width:50ch; font-weight:300; font-size:20px; line-height:1.85; color:rgba(239,234,227,0.66);">{{ ci.body }}</div>
+                  </sc-if>
+                </div>
+              </sc-for>
+              <div style="border-top:1px solid rgba(239,234,227,0.16);"></div>
+            </div>
+
+          </div>
+        </section>
+
+        <section style="background:var(--bg,#8b8074); color:var(--cream,#efeae3); padding:14vh 6vw;">
+          <div style="max-width:900px; margin:0 auto; text-align:center;">
+            <div style="font-family:'Marcellus',serif; font-size:38px; line-height:1; opacity:0.4; margin-bottom:24px;">&ldquo;</div>
+            <p style="font-family:'Marcellus',serif; font-size:clamp(24px,2.8vw,40px); line-height:1.4;">The business runs on a system now, not on memory. Quoting is faster, nothing falls through, and the brand finally looks like the work we do.</p>
+            <div style="margin-top:40px; font-size:11px; letter-spacing:0.24em; opacity:0.7;">BLACK GUM LANDSCAPING</div>
+          </div>
+        </section>
+
+        <section style="background:var(--bone,#ece7df); color:var(--ink,#2d2922); padding:12vh 6vw; text-align:center;">
+          <p style="font-weight:300; font-size:20px; line-height:1.8; color:var(--ink-soft,#6b655c); max-width:46ch; margin:0 auto;">More case studies are in the works. If you'd like to talk through a project of your own, we'd love to hear from you.</p>
+          <div onClick="{{ goContact }}" style="cursor:pointer; display:inline-block; margin-top:30px; font-size:11px; letter-spacing:0.24em; border-bottom:1px solid var(--ink,#2d2922); padding-bottom:5px;" style-hover="opacity:0.6;">START A CONVERSATION →</div>
+        </section>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isAbout }}" hint-placeholder-val="{{ true }}">
+      <div data-screen-label="About" style="animation:pageIn .6s cubic-bezier(.2,.7,.2,1) both;">
+        <section style="background:var(--bg,#8b8074); color:var(--cream,#efeae3); padding:16vh 6vw 12vh;">
+          <div style="max-width:1100px; margin:0 auto;">
+            <div style="font-size:11px; letter-spacing:0.3em; opacity:0.65; margin-bottom:34px;">( ABOUT )</div>
+            <h1 style="font-family:'Marcellus',serif; font-weight:400; font-size:clamp(38px,4.6vw,72px); line-height:1.12; max-width:18ch;">A boutique studio, built for businesses on the way up.</h1>
+          </div>
+        </section>
+
+        <section style="background:var(--bone,#ece7df); color:var(--ink,#2d2922); padding:13vh 6vw;">
+          <div style="max-width:1100px; margin:0 auto; display:grid; grid-template-columns:0.8fr 1.2fr; gap:54px;">
+            <div style="font-size:11px; letter-spacing:0.3em; color:var(--ink-soft,#6b655c);">( OUR APPROACH )</div>
+            <div>
+              <p style="font-family:'Marcellus',serif; font-size:clamp(24px,2.7vw,38px); line-height:1.35;">Porte Studio is a boutique marketing consultancy specialising in strategy, brand and communications.</p>
+              <p style="margin-top:32px; font-weight:300; font-size:22px; line-height:1.9; color:var(--ink-soft,#6b655c); max-width:58ch;">We work with ambitious, growing businesses: the ones doing excellent work who know their marketing could be doing more. We bring the strategy, the systems and the storytelling together, so growth feels intentional rather than accidental.</p>
+              <p style="margin-top:24px; font-weight:300; font-size:22px; line-height:1.9; color:var(--ink-soft,#6b655c); max-width:58ch;">Boutique by choice. We take on a small number of clients at a time, which means the people you meet are the people doing the work.</p>
+            </div>
+          </div>
+        </section>
+
+        <section style="background:var(--bone-2,#f4f1ea); color:var(--ink,#2d2922); padding:13vh 6vw;">
+          <div style="max-width:1100px; margin:0 auto;">
+            <div style="font-size:11px; letter-spacing:0.3em; color:var(--ink-soft,#6b655c); margin-bottom:60px;">( HOW WE WORK )</div>
+            <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:1px; background:var(--line,rgba(45,41,34,0.12));">
+              <div style="background:var(--bone-2,#f4f1ea); padding:44px 38px;"><div style="font-family:'Marcellus',serif; font-size:15px; color:var(--accent,#9a6f54); margin-bottom:22px;">01</div><h3 style="font-family:'Marcellus',serif; font-weight:400; font-size:25px; margin-bottom:16px;">Strategy before tactics</h3><p style="font-weight:300; font-size:20px; line-height:1.8; color:var(--ink-soft,#6b655c); max-width:42ch;">We start with the why and the who. Channels and campaigns come later, and they're better for it.</p></div>
+              <div style="background:var(--bone-2,#f4f1ea); padding:44px 38px;"><div style="font-family:'Marcellus',serif; font-size:15px; color:var(--accent,#9a6f54); margin-bottom:22px;">02</div><h3 style="font-family:'Marcellus',serif; font-weight:400; font-size:25px; margin-bottom:16px;">Systems that scale</h3><p style="font-weight:300; font-size:20px; line-height:1.8; color:var(--ink-soft,#6b655c); max-width:42ch;">We build the CRM, the flows and the processes that let your business grow without breaking.</p></div>
+              <div style="background:var(--bone-2,#f4f1ea); padding:44px 38px;"><div style="font-family:'Marcellus',serif; font-size:15px; color:var(--accent,#9a6f54); margin-bottom:22px;">03</div><h3 style="font-family:'Marcellus',serif; font-weight:400; font-size:25px; margin-bottom:16px;">Brand with substance</h3><p style="font-weight:300; font-size:20px; line-height:1.8; color:var(--ink-soft,#6b655c); max-width:42ch;">A brand isn't a logo. It's how you sound, sell and show up, and it should match the quality of your work.</p></div>
+              <div style="background:var(--bone-2,#f4f1ea); padding:44px 38px;"><div style="font-family:'Marcellus',serif; font-size:15px; color:var(--accent,#9a6f54); margin-bottom:22px;">04</div><h3 style="font-family:'Marcellus',serif; font-weight:400; font-size:25px; margin-bottom:16px;">A partner, not a vendor</h3><p style="font-weight:300; font-size:20px; line-height:1.8; color:var(--ink-soft,#6b655c); max-width:42ch;">We sit alongside you, learn your business, and care about the outcome as much as the deliverable.</p></div>
+            </div>
+          </div>
+        </section>
+
+        <section style="background:var(--bone,#ece7df); color:var(--ink,#2d2922); padding:13vh 6vw;">
+          <div style="max-width:1100px; margin:0 auto; display:grid; grid-template-columns:1fr 1.1fr; gap:60px; align-items:center;">
+            <div style="position:relative; overflow:hidden; aspect-ratio:4/5; background:#968b7e;">
+              <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=900&q=80" alt="" loading="lazy" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; filter:grayscale(0.42) sepia(0.14) saturate(0.78) contrast(1.05) brightness(1.02);" />
+              <div style="position:absolute; inset:0; background:linear-gradient(160deg, rgba(139,128,116,0.12), rgba(125,115,103,0.3)); mix-blend-mode:multiply;"></div>
+            </div>
+            <div>
+              <div style="font-size:11px; letter-spacing:0.3em; color:var(--accent,#9a6f54); margin-bottom:24px;">( FOUNDER )</div>
+              <h2 style="font-family:'Marcellus',serif; font-weight:400; font-size:clamp(28px,3vw,44px); line-height:1.15;">[ Founder Name ]</h2>
+              <div style="margin-top:10px; font-size:12px; letter-spacing:0.2em; color:var(--ink-soft,#6b655c);">FOUNDER &amp; LEAD CONSULTANT</div>
+              <p style="margin-top:28px; font-weight:300; font-size:22px; line-height:1.9; color:var(--ink-soft,#6b655c); max-width:50ch;">[ Add a short founder bio here: background, the experience behind Porte Studio, and what drew you to working with ambitious, growing businesses. A couple of sentences on philosophy and what clients can expect from working together. ]</p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isContact }}" hint-placeholder-val="{{ true }}">
+      <div data-screen-label="Contact" style="animation:pageIn .6s cubic-bezier(.2,.7,.2,1) both;">
+        <section style="background:var(--bg,#8b8074); color:var(--cream,#efeae3); padding:16vh 6vw 11vh;">
+          <div style="max-width:1100px; margin:0 auto;">
+            <div style="font-size:11px; letter-spacing:0.3em; opacity:0.65; margin-bottom:34px;">( CONTACT )</div>
+            <h1 style="font-family:'Marcellus',serif; font-weight:400; font-size:clamp(40px,5vw,76px); line-height:1.08;">Let's talk</h1>
+            <p style="margin-top:34px; max-width:50ch; font-weight:300; font-size:22px; line-height:1.85; opacity:0.82;">Tell us a little about your business and where you'd like to get to. We'll be in touch within two business days.</p>
+          </div>
+        </section>
+
+        <section style="background:var(--bone,#ece7df); color:var(--ink,#2d2922); padding:12vh 6vw 14vh;">
+          <div style="max-width:600px; margin:0 auto;">
+
+            <div>
+              <div style="font-size:11px; letter-spacing:0.3em; color:var(--ink-soft,#6b655c); margin-bottom:44px;">( SEND A MESSAGE )</div>
+              <sc-if value="{{ sent }}" hint-placeholder-val="{{ false }}">
+                <div style="padding:50px 0;">
+                  <div style="font-family:'Marcellus',serif; font-size:32px; margin-bottom:18px;">Thank you.</div>
+                  <p style="font-weight:300; font-size:20px; line-height:1.8; color:var(--ink-soft,#6b655c); max-width:44ch;">Your message is on its way. We'll get back to you within two business days, usually sooner.</p>
+                  <div onClick="{{ resetForm }}" style="cursor:pointer; display:inline-block; margin-top:30px; font-size:11px; letter-spacing:0.24em; border-bottom:1px solid var(--ink,#2d2922); padding-bottom:5px;" style-hover="opacity:0.6;">SEND ANOTHER →</div>
+                </div>
+              </sc-if>
+              <sc-if value="{{ notSent }}" hint-placeholder-val="{{ true }}">
+                <div style="display:flex; flex-direction:column; gap:34px;">
+                  <div>
+                    <div style="font-size:10.5px; letter-spacing:0.24em; color:var(--ink-soft,#6b655c); margin-bottom:12px;">NAME</div>
+                    <input value="{{ fName }}" onChange="{{ onName }}" placeholder="Your name" style="width:100%; background:transparent; border:none; border-bottom:1px solid var(--line,rgba(45,41,34,0.25)); padding:8px 0; font-family:'Jost',sans-serif; font-size:22px; font-weight:300; color:var(--ink,#2d2922); outline:none;" />
+                    <sc-if value="{{ errName }}" hint-placeholder-val="{{ false }}"><div style="font-size:11px; color:var(--accent,#9a6f54); margin-top:8px; letter-spacing:0.04em;">Please enter your name.</div></sc-if>
+                  </div>
+                  <div>
+                    <div style="font-size:10.5px; letter-spacing:0.24em; color:var(--ink-soft,#6b655c); margin-bottom:12px;">EMAIL</div>
+                    <input value="{{ fEmail }}" onChange="{{ onEmail }}" placeholder="you@business.com" style="width:100%; background:transparent; border:none; border-bottom:1px solid var(--line,rgba(45,41,34,0.25)); padding:8px 0; font-family:'Jost',sans-serif; font-size:22px; font-weight:300; color:var(--ink,#2d2922); outline:none;" />
+                    <sc-if value="{{ errEmail }}" hint-placeholder-val="{{ false }}"><div style="font-size:11px; color:var(--accent,#9a6f54); margin-top:8px; letter-spacing:0.04em;">Please enter a valid email.</div></sc-if>
+                  </div>
+                  <div>
+                    <div style="font-size:10.5px; letter-spacing:0.24em; color:var(--ink-soft,#6b655c); margin-bottom:12px;">BUSINESS <span style="opacity:0.5;">(OPTIONAL)</span></div>
+                    <input value="{{ fBusiness }}" onChange="{{ onBusiness }}" placeholder="Business name" style="width:100%; background:transparent; border:none; border-bottom:1px solid var(--line,rgba(45,41,34,0.25)); padding:8px 0; font-family:'Jost',sans-serif; font-size:22px; font-weight:300; color:var(--ink,#2d2922); outline:none;" />
+                  </div>
+                  <div>
+                    <div style="font-size:10.5px; letter-spacing:0.24em; color:var(--ink-soft,#6b655c); margin-bottom:12px;">WHAT ARE YOU INTERESTED IN?</div>
+                    <select value="{{ fInterest }}" onChange="{{ onInterest }}" style="width:100%; background:transparent; border:none; border-bottom:1px solid var(--line,rgba(45,41,34,0.25)); padding:8px 0; font-family:'Jost',sans-serif; font-size:22px; font-weight:300; color:var(--ink,#2d2922); outline:none; cursor:pointer; -webkit-appearance:none; appearance:none;">
+                      <option value="Marketing Strategy &amp; Campaigns">Marketing Strategy &amp; Campaigns</option>
+                      <option value="Brand &amp; Communications">Brand &amp; Communications</option>
+                      <option value="CRM &amp; Systems">CRM &amp; Systems</option>
+                      <option value="Sales Consulting">Sales Consulting</option>
+                      <option value="Not sure yet / general enquiry">Not sure yet / general enquiry</option>
+                    </select>
+                  </div>
+                  <div>
+                    <div style="font-size:10.5px; letter-spacing:0.24em; color:var(--ink-soft,#6b655c); margin-bottom:12px;">HOW CAN WE HELP?</div>
+                    <textarea value="{{ fMessage }}" onChange="{{ onMessage }}" placeholder="A few lines about your business and what you're after." rows="3" style="width:100%; background:transparent; border:none; border-bottom:1px solid var(--line,rgba(45,41,34,0.25)); padding:8px 0; font-family:'Jost',sans-serif; font-size:22px; font-weight:300; color:var(--ink,#2d2922); outline:none; resize:none; line-height:1.6;"></textarea>
+                    <sc-if value="{{ errMessage }}" hint-placeholder-val="{{ false }}"><div style="font-size:11px; color:var(--accent,#9a6f54); margin-top:8px; letter-spacing:0.04em;">Please add a short message.</div></sc-if>
+                  </div>
+                  <div onClick="{{ submit }}" style="cursor:pointer; align-self:flex-start; margin-top:6px; padding:16px 40px; background:var(--ink,#2d2922); color:var(--bone,#ece7df); font-size:11px; letter-spacing:0.24em;" style-hover="opacity:0.85;">SEND MESSAGE</div>
+                </div>
+              </sc-if>
+            </div>
+
+          </div>
+        </section>
+      </div>
+    </sc-if>
+
+  </main>
+
+  <sc-if value="{{ showCta }}" hint-placeholder-val="{{ true }}">
+    <section style="background:var(--bg-deep,#7d7367); color:var(--cream,#efeae3); padding:13vh 6vw; text-align:center;">
+      <div style="font-size:11px; letter-spacing:0.3em; opacity:0.65; margin-bottom:30px;">( LET'S TALK )</div>
+      <h2 style="font-family:'Marcellus',serif; font-weight:400; font-size:clamp(30px,3.6vw,52px); line-height:1.2; max-width:18ch; margin:0 auto;">Ready to bring clarity to your marketing?</h2>
+      <div onClick="{{ goContact }}" style="cursor:pointer; display:inline-block; margin-top:44px; padding:16px 38px; background:var(--cream,#efeae3); color:var(--ink,#2d2922); font-size:11px; letter-spacing:0.24em;" style-hover="opacity:0.88;">GET IN TOUCH</div>
+    </section>
+  </sc-if>
+
+  <footer style="background:var(--bg,#8b8074); color:var(--cream,#efeae3); padding:7vh 6vw 5vh; border-top:1px solid var(--line-light,rgba(239,234,227,0.18));">
+    <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:40px;">
+      <div>
+        <div style="font-family:'Marcellus',serif; font-size:26px; margin-bottom:16px;">Porte Studio</div>
+        <p style="font-weight:300; font-size:16px; line-height:1.8; opacity:0.7; max-width:30ch;">Boutique marketing consultancy specialising in strategy, brand and communications.</p>
+      </div>
+      <div style="display:flex; gap:70px; flex-wrap:wrap;">
+        <div>
+          <div style="font-size:11px; letter-spacing:0.26em; opacity:0.55; margin-bottom:18px;">PAGES</div>
+          <div style="display:flex; flex-direction:column; gap:12px; font-size:16px; font-weight:300;">
+            <div onClick="{{ goServices }}" style="cursor:pointer;" style-hover="opacity:0.6;">Services</div>
+            <div onClick="{{ goWork }}" style="cursor:pointer;" style-hover="opacity:0.6;">Case Studies</div>
+            <div onClick="{{ goAbout }}" style="cursor:pointer;" style-hover="opacity:0.6;">About</div>
+            <div onClick="{{ goContact }}" style="cursor:pointer;" style-hover="opacity:0.6;">Contact</div>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:11px; letter-spacing:0.26em; opacity:0.55; margin-bottom:18px;">CONTACT</div>
+          <div style="display:flex; flex-direction:column; gap:12px; font-size:16px; font-weight:300;">
+            <div><span>hello</span><span>&#64;</span><span>portestudio.com.au</span></div>
+            <div>Book a discovery call</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:8vh; display:flex; justify-content:space-between; font-size:11px; letter-spacing:0.16em; opacity:0.5; flex-wrap:wrap; gap:12px;">
+      <div>© 2026 PORTE STUDIO</div>
+      <div>STRATEGY · BRAND · COMMUNICATIONS</div>
+    </div>
+  </footer>
+
+</div></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:900},&quot;palette&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;taupe&quot;,&quot;bone&quot;,&quot;clay&quot;],&quot;default&quot;:&quot;taupe&quot;,&quot;tsType&quot;:&quot;'taupe'|'bone'|'clay'&quot;}}">
+class Component extends DCLogic {
+  state = { page: 'home', form: { name:'', email:'', business:'', interest:'Marketing Strategy & Campaigns', message:'' }, errors: {}, sent: false, openCase: 0 };
+
+  componentDidMount(){
+    this._io = new IntersectionObserver((entries)=>{
+      entries.forEach(e=>{
+        if(e.isIntersecting){
+          e.target.style.opacity = '1';
+          e.target.style.transform = 'none';
+          e.target.style.willChange = '';
+          this._io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.08, rootMargin: '0px 0px -6% 0px' });
+    this._revealTimer = setTimeout(() => this.setupReveal(), 60);
+  }
+  componentDidUpdate(){
+    clearTimeout(this._revealTimer);
+    this._revealTimer = setTimeout(() => this.setupReveal(), 60);
+  }
+  componentWillUnmount(){
+    if(this._io) this._io.disconnect();
+    clearTimeout(this._revealTimer);
+  }
+  setupReveal(){
+    if(!this._io) return;
+    document.querySelectorAll('main section, footer').forEach(sec => {
+      let container = sec;
+      const kids = [...sec.children].filter(n => n.nodeType === 1);
+      if(kids.length === 1 && kids[0].tagName === 'DIV') container = kids[0];
+      [...container.children].forEach((el, i) => {
+        if(el.__psReveal) return;
+        const pos = getComputedStyle(el).position;
+        if(pos === 'absolute' || pos === 'fixed') return;
+        el.__psReveal = true;
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(16px)';
+        el.style.transition = 'opacity 280ms ease-in-out, transform 280ms ease-in-out';
+        el.style.transitionDelay = Math.min(i, 6) * 55 + 'ms';
+        el.style.willChange = 'opacity, transform';
+        this._io.observe(el);
+      });
+    });
+  }
+
+  CASE = [
+    { title: 'Overview', body: 'For years Black Gum built a strong reputation on word-of-mouth \u2014 but the systems behind the business hadn\u2019t kept pace with demand. We were brought in to bring strategy, brand and process together so it could scale without the owner in every detail.' },
+    { title: 'The Challenge', body: 'Quotes were inconsistent and slow, follow-up slipped through the cracks, and the brand didn\u2019t reflect the quality of the work on the ground. Growth was capped by everything living in one person\u2019s head.' },
+    { title: 'The Solution', body: 'We mapped the journey from enquiry to won job and rebuilt it \u2014 clearer stages, billable quoting, an uplifted brand across every touchpoint, and a new CRM with automations that capture leads, track quotes and handle follow-up.' },
+    { title: 'The Impact', body: 'The business now runs on a system, not on memory. Quoting is faster, nothing falls through, the brand finally matches the craft \u2014 and the owner has hours back each week to focus on growth.' }
+  ];
+  toggleCase = (i) => this.setState(s => ({ openCase: s.openCase === i ? -1 : i }));
+
+  onName = (e) => this.setField('name', e.target.value);
+  onEmail = (e) => this.setField('email', e.target.value);
+  onBusiness = (e) => this.setField('business', e.target.value);
+  onInterest = (e) => this.setField('interest', e.target.value);
+  onMessage = (e) => this.setField('message', e.target.value);
+  setField = (k, v) => this.setState(s => ({ form: { ...s.form, [k]: v }, errors: { ...s.errors, [k]: false } }));
+
+  submit = () => {
+    const f = this.state.form;
+    const errors = {
+      name: !f.name.trim(),
+      email: !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email.trim()),
+      message: !f.message.trim()
+    };
+    if (errors.name || errors.email || errors.message) { this.setState({ errors }); return; }
+    this.setState({ sent: true, errors: {} });
+  };
+  resetForm = () => this.setState({ form: { name:'', email:'', business:'', interest:'Marketing Strategy & Campaigns', message:'' }, errors: {}, sent: false });
+
+  PALETTES = {
+    taupe: { '--bg':'#8b8074','--bg-deep':'#7d7367','--bone':'#ece7df','--bone-2':'#f4f1ea','--ink':'#2d2922','--ink-soft':'#6b655c','--cream':'#efeae3','--line':'rgba(45,41,34,0.12)','--line-light':'rgba(239,234,227,0.2)','--accent':'#9a6f54' },
+    bone: { '--bg':'#bcb2a3','--bg-deep':'#a99e8d','--bone':'#f5f2ec','--bone-2':'#faf8f3','--ink':'#2d2922','--ink-soft':'#6f695f','--cream':'#fbf9f5','--line':'rgba(45,41,34,0.1)','--line-light':'rgba(251,249,245,0.28)','--accent':'#9a6f54' },
+    clay: { '--bg':'#9a8270','--bg-deep':'#88705c','--bone':'#efe3d6','--bone-2':'#f8f0e6','--ink':'#33271d','--ink-soft':'#7a6757','--cream':'#f4ebdf','--line':'rgba(51,39,29,0.14)','--line-light':'rgba(239,234,227,0.2)','--accent':'#b06a44' }
+  };
+
+  go = (p) => {
+    this.setState({ page: p });
+    if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'auto' });
+  };
+  goHome = () => this.go('home');
+  goServices = () => this.go('services');
+  goWork = () => this.go('work');
+  goAbout = () => this.go('about');
+  goContact = () => this.go('contact');
+
+  renderVals() {
+    const page = this.state.page;
+    const vars = this.PALETTES[this.props.palette] || this.PALETTES.taupe;
+    const caseItems = this.CASE.map((c, i) => {
+      const open = this.state.openCase === i;
+      return {
+        title: c.title,
+        body: c.body,
+        open,
+        toggle: () => this.toggleCase(i),
+        iconGlyph: open ? '\u2013' : '\u2198',
+        iconBg: open ? '#efeae3' : 'transparent',
+        iconColor: open ? '#2d2922' : '#efeae3',
+        iconBorder: open ? '#efeae3' : 'rgba(239,234,227,0.4)'
+      };
+    });
+    return {
+      caseItems,
+      page,
+      isHome: page === 'home',
+      isServices: page === 'services',
+      isWork: page === 'work',
+      isAbout: page === 'about',
+      isContact: page === 'contact',
+      showCta: page !== 'contact',
+      rootVars: vars,
+      sent: this.state.sent,
+      notSent: !this.state.sent,
+      fName: this.state.form.name,
+      fEmail: this.state.form.email,
+      fBusiness: this.state.form.business,
+      fInterest: this.state.form.interest,
+      fMessage: this.state.form.message,
+      errName: !!this.state.errors.name,
+      errEmail: !!this.state.errors.email,
+      errMessage: !!this.state.errors.message,
+      onName: this.onName,
+      onEmail: this.onEmail,
+      onBusiness: this.onBusiness,
+      onInterest: this.onInterest,
+      onMessage: this.onMessage,
+      submit: this.submit,
+      resetForm: this.resetForm,
+      goHome: this.goHome,
+      goServices: this.goServices,
+      goWork: this.goWork,
+      goAbout: this.goAbout,
+      goContact: this.goContact
+    };
+  }
+}
+</script>
+</body>
+</html>
