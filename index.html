@@ -63,12 +63,14 @@
     [style*="border-bottom:1px solid rgba(239,234,227,0.55)"]{ padding:11px 0 7px !important; }
   }
   @media (min-width:768px){ .mobile-panel, .mobile-overlay, .hamburger-btn{ display:none !important; } }
+  .seen #preloader{ display:none !important; }
 </style>
+<script>if(sessionStorage.getItem("ps_intro")){document.documentElement.classList.add("seen");}else{sessionStorage.setItem("ps_intro","1");}</script>
 </head>
 <body>
 
 
-  <div style="position:fixed; inset:0; z-index:200; background:var(--bg-deep); display:flex; flex-direction:column; align-items:center; justify-content:center; animation:plReveal 2.7s cubic-bezier(0.76,0,0.24,1) forwards; will-change:transform; pointer-events:none;">
+  <div id="preloader" style="position:fixed; inset:0; z-index:200; background:var(--bg-deep); display:flex; flex-direction:column; align-items:center; justify-content:center; animation:plReveal 2.7s cubic-bezier(0.76,0,0.24,1) forwards; will-change:transform; pointer-events:none;">
     <div style="font-family:'Marcellus',serif; color:var(--cream); font-size:clamp(20px,2.6vw,32px); letter-spacing:0.5em; padding-left:0.5em; animation:plName 2.7s ease forwards;">PORTE STUDIO</div>
     <div style="margin-top:26px; width:128px; height:1px; background:rgba(239,234,227,0.7); transform-origin:center; animation:plLine 2.7s ease forwards;"></div>
   </div>
