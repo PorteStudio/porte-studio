@@ -279,15 +279,10 @@
     var band = btn.closest("section");
     if (!band) return;
 
-    // Colour of the section directly above the band
-    var sections = Array.prototype.slice.call(document.querySelectorAll("section"));
-    var idx = sections.indexOf(band);
-    var prev = idx > 0 ? sections[idx - 1] : null;
-    var variant = "dark";
-    if (prev) variant = isDark(getComputedStyle(prev).backgroundColor) ? "light" : "dark";
-
-    if (variant === "light") { band.style.background = "var(--bone)"; band.style.color = "var(--ink)"; }
-    else { band.style.background = "var(--bg-deep)"; band.style.color = "var(--cream)"; }
+    // Match the form to the band's OWN current colour so it's always readable.
+    // We deliberately don't change any section colours here — the overall
+    // colour rhythm is a separate piece of work for its own session.
+    var variant = isDark(getComputedStyle(band).backgroundColor) ? "dark" : "light";
 
     if (!document.getElementById("pf-cta-style")) {
       var st = document.createElement("style"); st.id = "pf-cta-style";
@@ -296,12 +291,13 @@
         + '.pf-cta .pf-full{grid-column:1/-1;}'
         + '.pf-cta label{display:block;font-size:10.5px;letter-spacing:0.24em;margin-bottom:11px;}'
         + '.pf-cta label .opt{opacity:0.55;}'
-        + '.pf-cta input,.pf-cta textarea{width:100%;background:transparent;border:none;border-bottom:1px solid;padding:8px 0;font-family:Jost,sans-serif;font-size:19px;font-weight:300;outline:none;}'
+        + '.pf-cta input,.pf-cta select,.pf-cta textarea{width:100%;background:transparent;border:none;border-bottom:1px solid;padding:8px 0;font-family:Jost,sans-serif;font-size:19px;font-weight:300;outline:none;}'
+        + '.pf-cta select{cursor:pointer;-webkit-appearance:none;appearance:none;}.pf-cta select option{color:#2d2922;}'
         + '.pf-cta textarea{resize:none;line-height:1.6;}'
         + '.pf-cta .pf-send{grid-column:1/-1;justify-self:center;margin-top:12px;padding:16px 44px;font-size:11px;letter-spacing:0.24em;border:none;font-family:Jost,sans-serif;cursor:pointer;}'
         + '.pf-cta .pf-err{display:none;font-size:11px;margin-top:8px;letter-spacing:0.04em;}'
-        + '.pf-dark label{color:rgba(239,234,227,0.72);}.pf-dark input,.pf-dark textarea{color:#efeae3;border-bottom-color:rgba(239,234,227,0.45);}.pf-dark input::placeholder,.pf-dark textarea::placeholder{color:rgba(239,234,227,0.4);}.pf-dark .pf-send{background:#efeae3;color:#2d2922;}.pf-dark .pf-err{color:#efeae3;}'
-        + '.pf-light label{color:#6b655c;}.pf-light input,.pf-light textarea{color:#2d2922;border-bottom-color:rgba(45,41,34,0.18);}.pf-light input::placeholder,.pf-light textarea::placeholder{color:rgba(45,41,34,0.4);}.pf-light .pf-send{background:#2d2922;color:#efeae3;}.pf-light .pf-err{color:#9a6f54;}'
+        + '.pf-dark label{color:rgba(239,234,227,0.72);}.pf-dark input,.pf-dark select,.pf-dark textarea{color:#efeae3;border-bottom-color:rgba(239,234,227,0.45);}.pf-dark input::placeholder,.pf-dark textarea::placeholder{color:rgba(239,234,227,0.4);}.pf-dark .pf-send{background:#efeae3;color:#2d2922;}.pf-dark .pf-err{color:#efeae3;}'
+        + '.pf-light label{color:#6b655c;}.pf-light input,.pf-light select,.pf-light textarea{color:#2d2922;border-bottom-color:rgba(45,41,34,0.18);}.pf-light input::placeholder,.pf-light textarea::placeholder{color:rgba(45,41,34,0.4);}.pf-light .pf-send{background:#2d2922;color:#efeae3;}.pf-light .pf-err{color:#9a6f54;}'
         + '@media(max-width:640px){.pf-cta{grid-template-columns:1fr;gap:24px;}}';
       document.head.appendChild(st);
     }
@@ -314,6 +310,7 @@
       + '<div><label>EMAIL</label><input id="bfEmail" placeholder="you@business.com" /><div id="bfErrEmail" class="pf-err">Please enter a valid email.</div></div>'
       + '<div><label>PHONE <span class="opt">(OPTIONAL)</span></label><input id="bfPhone" placeholder="Your phone number" /></div>'
       + '<div><label>BUSINESS <span class="opt">(OPTIONAL)</span></label><input id="bfBusiness" placeholder="Business name" /></div>'
+      + '<div class="pf-full"><label>WHAT ARE YOU INTERESTED IN?</label><select id="bfInterest"><option>Book a discovery call</option><option>Marketing Strategy &amp; Campaigns</option><option>Brand &amp; Communications</option><option>CRM &amp; Systems</option><option>Sales Consulting</option><option>Not sure yet / general enquiry</option></select></div>'
       + '<div class="pf-full"><label>HOW CAN WE HELP?</label><textarea id="bfMessage" rows="2" placeholder="A few lines about your business and what you\'re after."></textarea><div id="bfErrMessage" class="pf-err">Please add a short message.</div></div>'
       + '<input type="text" id="bfHp" style="position:absolute;left:-9999px;top:-9999px;" tabindex="-1" autocomplete="off" />'
       + '<button type="submit" class="pf-send">SEND MESSAGE</button>';
@@ -329,6 +326,7 @@
       var email = document.getElementById("bfEmail").value.trim();
       var phone = document.getElementById("bfPhone").value.trim();
       var business = document.getElementById("bfBusiness").value.trim();
+      var interest = document.getElementById("bfInterest").value;
       var message = document.getElementById("bfMessage").value.trim();
       var eN = !name, eE = !EMAIL_RE.test(email), eM = !message;
       show2("bfErrName", eN); show2("bfErrEmail", eE); show2("bfErrMessage", eM);
@@ -336,9 +334,9 @@
       var sb = form.querySelector(".pf-send");
       sb.style.pointerEvents = "none"; sb.textContent = "SENDING…";
       sendToWeb3Forms({
-        subject: "New website enquiry — Bottom form",
+        subject: "New website enquiry — " + (interest || "Bottom form"),
         name: name, email: email, phone: phone, business: business,
-        message: message, source: "Bottom CTA (" + location.pathname + ")"
+        interest: interest, message: message, source: "Bottom CTA (" + location.pathname + ")"
       }).then(function (res) {
         if (res && res.success) {
           form.innerHTML = '<div class="pf-full" style="text-align:center;"><div style="font-family:Marcellus,serif;font-size:30px;margin-bottom:14px;">Thank you.</div><p style="font-weight:300;font-size:18px;line-height:1.8;opacity:0.85;">Your message is on its way. We\'ll get back to you within two business days, usually sooner.</p></div>';
