@@ -141,6 +141,15 @@
       emailGroup.parentNode.insertBefore(grp, emailGroup.nextSibling);
     }
 
+    // Add "Social Media Strategy" to the contact form's interest dropdown (if missing)
+    var cInt = document.getElementById("cInterest");
+    if (cInt && !Array.prototype.some.call(cInt.options, function (o) { return o.text === "Social Media Strategy"; })) {
+      var smOpt = document.createElement("option"); smOpt.text = "Social Media Strategy";
+      var after = -1;
+      for (var k = 0; k < cInt.options.length; k++) { if (/Brand/.test(cInt.options[k].text)) { after = k; break; } }
+      if (after >= 0 && after + 1 < cInt.options.length) cInt.add(smOpt, cInt.options[after + 1]); else cInt.add(smOpt);
+    }
+
     function showErr(id, on) {
       var el = document.getElementById(id);
       if (el) el.style.display = on ? "block" : "none";
@@ -227,6 +236,7 @@
       + '      <option>Book a discovery call</option>'
       + '      <option>Marketing Strategy &amp; Campaigns</option>'
       + '      <option>Brand &amp; Communications</option>'
+      + '      <option>Social Media Strategy</option>'
       + '      <option>CRM &amp; Systems</option>'
       + '      <option>Sales Consulting</option>'
       + '      <option>Not sure yet / general enquiry</option>'
@@ -391,7 +401,7 @@
       + '<div><label>EMAIL</label><input id="bfEmail" placeholder="you@business.com" /><div id="bfErrEmail" class="pf-err">Please enter a valid email.</div></div>'
       + '<div><label>PHONE <span class="opt">(OPTIONAL)</span></label><input id="bfPhone" placeholder="Your phone number" /></div>'
       + '<div><label>BUSINESS <span class="opt">(OPTIONAL)</span></label><input id="bfBusiness" placeholder="Business name" /></div>'
-      + '<div class="pf-full"><label>WHAT ARE YOU INTERESTED IN?</label><select id="bfInterest"><option>Book a discovery call</option><option>Marketing Strategy &amp; Campaigns</option><option>Brand &amp; Communications</option><option>CRM &amp; Systems</option><option>Sales Consulting</option><option>Not sure yet / general enquiry</option></select></div>'
+      + '<div class="pf-full"><label>WHAT ARE YOU INTERESTED IN?</label><select id="bfInterest"><option>Book a discovery call</option><option>Marketing Strategy &amp; Campaigns</option><option>Brand &amp; Communications</option><option>Social Media Strategy</option><option>CRM &amp; Systems</option><option>Sales Consulting</option><option>Not sure yet / general enquiry</option></select></div>'
       + '<div class="pf-full"><label>HOW CAN WE HELP?</label><textarea id="bfMessage" rows="2" placeholder="A few lines about your business and what you\'re after."></textarea><div id="bfErrMessage" class="pf-err">Please add a short message.</div></div>'
       + '<input type="text" id="bfHp" style="position:absolute;left:-9999px;top:-9999px;" tabindex="-1" autocomplete="off" />'
       + '<button type="submit" class="pf-send">SEND MESSAGE</button>';
