@@ -26,6 +26,15 @@
   var API = "https://api.web3forms.com/submit";
   var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+  /* ---- HubSpot (free CRM) — leads also push here, in parallel ------- */
+  var HUBSPOT_PORTAL = "443081957";
+  var HUBSPOT_FORM = "6b801fcb-65b6-488a-bf69-851312d43593";
+  var HUBSPOT_TRACKER = "//js-ap1.hs-scripts.com/443081957.js";
+
+  /* ---- Google Analytics (GA4) — a lead event fires on each submit -- */
+  var GA4_ID = "G-F4FDLFBPGX";
+  /* ------------------------------------------------------------------ */
+
   /* Buttons with this exact text (any case) open the popup form. */
   var OPEN_TRIGGERS = ["book a discovery call", "get in touch"];
 
@@ -38,6 +47,74 @@
       headers: { "Content-Type": "application/json", Accept: "application/json" },
       body: JSON.stringify(payload)
     }).then(function (r) { return r.json(); });
+  }
+
+  /* Read a cookie (used to link the lead to HubSpot's page-view tracking) */
+  function getCookie(name) {
+    var m = document.cookie.match(new RegExp("(^|; )" + name + "=([^;]*)"));
+    return m ? decodeURIComponent(m[2]) : "";
+  }
+
+  /* Load the HubSpot tracking script (page analytics + sets the hubspotutk cookie) */
+  function loadHubSpot() {
+    if (document.getElementById("hs-script-loader")) return;
+    var s = document.createElement("script");
+    s.id = "hs-script-loader"; s.type = "text/javascript"; s.async = true; s.defer = true;
+    s.src = HUBSPOT_TRACKER;
+    document.head.appendChild(s);
+  }
+
+  /* Push the lead into HubSpot's free CRM (parallel to the email). Best-effort. */
+  function sendToHubSpot(d) {
+    var msg = "";
+    if (d.interest) msg += "Interested in: " + d.interest;
+    if (d.source) msg += (msg ? " · " : "") + "via " + d.source;
+    if (msg) msg += "\n\n";
+    msg += (d.message || "");
+    var body = {
+      submittedAt: Date.now(),
+      fields: [
+        { name: "email", value: d.email || "" },
+        { name: "firstname", value: (d.name || "").trim() },
+        { name: "phone", value: d.phone || "" },
+        { name: "company", value: d.business || "" },
+        { name: "message", value: msg }
+      ],
+      context: { pageUri: location.href, pageName: document.title }
+    };
+    var hutk = getCookie("hubspotutk");
+    if (hutk) body.context.hutk = hutk;
+    return fetch("https://api.hsforms.com/submissions/v3/integration/submit/" + HUBSPOT_PORTAL + "/" + HUBSPOT_FORM, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    }).then(function (r) { return r.ok; }).catch(function () { return false; });
+  }
+
+  /* Load Google Analytics (GA4) */
+  function loadGA4() {
+    if (!GA4_ID || window.__ga4Loaded) return;
+    window.__ga4Loaded = true;
+    var s = document.createElement("script");
+    s.async = true; s.src = "https://www.googletagmanager.com/gtag/js?id=" + GA4_ID;
+    document.head.appendChild(s);
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function () { window.dataLayer.push(arguments); };
+    window.gtag("js", new Date());
+    window.gtag("config", GA4_ID);
+  }
+
+  /* Fire a GA4 "generate_lead" event, tagged with which form + page */
+  function trackLead(source) {
+    try {
+      if (typeof window.gtag === "function") {
+        window.gtag("event", "generate_lead", {
+          form_location: source,
+          page_path: location.pathname,
+          page_title: document.title
+        });
+      }
+    } catch (e) {}
   }
 
   /* =================================================================
@@ -85,6 +162,8 @@
       freshBtn.style.pointerEvents = "none";
       freshBtn.textContent = "SENDING…";
 
+      sendToHubSpot({ name: name, email: email, phone: phone, business: business, interest: interest, message: message, source: "Contact page" });
+      trackLead("Contact page");
       sendToWeb3Forms({
         subject: "New website enquiry — " + (interest || "General"),
         name: name, email: email, phone: phone, business: business,
@@ -208,6 +287,8 @@
       sendBtn.style.pointerEvents = "none";
       sendBtn.textContent = "SENDING…";
 
+      sendToHubSpot({ name: name, email: email, phone: phone, business: business, interest: interest, message: message, source: "Popup form" });
+      trackLead("Popup form");
       sendToWeb3Forms({
         subject: "New website enquiry — " + (interest || "General"),
         name: name, email: email, phone: phone, business: business,
@@ -333,6 +414,8 @@
       if (eN || eE || eM) return;
       var sb = form.querySelector(".pf-send");
       sb.style.pointerEvents = "none"; sb.textContent = "SENDING…";
+      sendToHubSpot({ name: name, email: email, phone: phone, business: business, interest: interest, message: message, source: "Bottom CTA (" + location.pathname + ")" });
+      trackLead("Bottom CTA");
       sendToWeb3Forms({
         subject: "New website enquiry — " + (interest || "Bottom form"),
         name: name, email: email, phone: phone, business: business,
@@ -398,7 +481,7 @@
   }
 
   /* ---- run everything once the page is ready ---------------------- */
-  function boot() { injectPopup(); wireContactForm(); wireBottomCta(); wireTriggers(); cleanLinks(); wireFooter(); autoPopup(); }
+  function boot() { loadHubSpot(); loadGA4(); injectPopup(); wireContactForm(); wireBottomCta(); wireTriggers(); cleanLinks(); wireFooter(); autoPopup(); }
   if (document.readyState !== "loading") boot();
   else document.addEventListener("DOMContentLoaded", boot);
 })();
