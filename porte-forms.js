@@ -369,8 +369,36 @@
     }, 45000);
   }
 
+  /* =================================================================
+     PART G — footer colour (bone footer where it follows a dark band,
+     taupe footer where it follows a light section, e.g. Contact)
+     ================================================================= */
+  function wireFooter() {
+    var footer = document.querySelector("footer");
+    if (!footer) return;
+    var sections = document.querySelectorAll("section");
+    var last = sections.length ? sections[sections.length - 1] : null;
+    var aboveDark = last ? isDark(getComputedStyle(last).backgroundColor) : true;
+    if (!aboveDark) return; // section above the footer is light -> keep the current dark footer
+
+    if (!document.getElementById("pf-footer-style")) {
+      var st = document.createElement("style"); st.id = "pf-footer-style";
+      st.textContent = ''
+        + 'footer.pf-footer-light{background:#ece7df !important;border-top:1px solid rgba(45,41,34,0.12) !important;color:#6b655c !important;}'
+        + 'footer.pf-footer-light *{color:#6b655c !important;opacity:1 !important;}'
+        + 'footer.pf-footer-light .pf-fname{color:#8b8074 !important;}';
+      document.head.appendChild(st);
+    }
+    footer.classList.add("pf-footer-light");
+    // give the big "Porte Studio" name the taupe accent
+    var all = footer.querySelectorAll("*");
+    for (var i = 0; i < all.length; i++) {
+      if (/Marcellus/i.test(all[i].getAttribute("style") || "")) { all[i].classList.add("pf-fname"); break; }
+    }
+  }
+
   /* ---- run everything once the page is ready ---------------------- */
-  function boot() { injectPopup(); wireContactForm(); wireBottomCta(); wireTriggers(); cleanLinks(); autoPopup(); }
+  function boot() { injectPopup(); wireContactForm(); wireBottomCta(); wireTriggers(); cleanLinks(); wireFooter(); autoPopup(); }
   if (document.readyState !== "loading") boot();
   else document.addEventListener("DOMContentLoaded", boot);
 })();
