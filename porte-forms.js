@@ -546,9 +546,25 @@
     } catch (e) {}
   }
 
+  /* Make the top-left "PORTE STUDIO" logo open the main site (in a new tab, so
+     the ad visitor doesn't lose the landing page). */
+  function wireLandingLogo() {
+    var els = document.querySelectorAll("a, div, span, h1, h2, p, strong");
+    for (var i = 0; i < els.length; i++) {
+      var el = els[i];
+      if (el.children.length || el.__porteLogo) continue;
+      if ((el.textContent || "").trim().toUpperCase() === "PORTE STUDIO") {
+        el.__porteLogo = true;
+        el.style.cursor = "pointer";
+        el.addEventListener("click", function () { window.open("https://portestudio.com.au/", "_blank", "noopener"); });
+      }
+    }
+  }
+
   function initLandingForms(offer) {
     var source = "Landing: " + offer;
     applyLandingSeo(offer);
+    wireLandingLogo();
 
     // Find the wrapper label sitting just above a field (Name, Email, etc.)
     function labelFor(el) {
@@ -612,6 +628,7 @@
     var tries = 0;
     var iv = setInterval(function () {
       applyLandingSeo(offer);
+      wireLandingLogo();
       document.addEventListener("submit", onLandingSubmit, true);
       if (++tries >= 20) clearInterval(iv);   // ~12s safety net
     }, 600);
