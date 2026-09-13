@@ -490,8 +490,142 @@
     }
   }
 
+  /* =================================================================
+     PART H — LANDING PAGES (ad pages under /go/)
+     These are Claude Design "bundled" pages: the form is drawn by a
+     small app after the page loads, so we can't rely on fixed IDs like
+     the main site. Instead we listen for ANY form submit on the page,
+     read whatever fields are there, and push the lead to Web3Forms +
+     HubSpot + GA4 — tagged with this page's own label so we know which
+     landing page it came from. The page's own "thank you" still shows.
+
+     A page turns this on by adding, in its <head>:
+       <meta name="porte-landing" content="Brand Strategy">
+     The content is the label used in HubSpot and GA4 ("Landing: Brand
+     Strategy"). No popup or bottom form is added on landing pages.
+     ================================================================= */
+  /* Per-page SEO (applied by JS because the bundled page rewrites its own <head>). */
+  var LANDING_SEO = {
+    "Brand Strategy": {
+      title: "Brand Strategy & Brand Foundations Sprint | Porte Studio",
+      desc: "Get a clear, practical brand foundation in a week. The Brand Foundations Sprint from Porte Studio: documented, ready to use, and built to make every marketing dollar work harder.",
+      slug: "brand-strategy"
+    },
+    "Customer Journeys": {
+      title: "Automated Customer Journeys & Email Marketing | Porte Studio",
+      desc: "Marketing that responds to every customer automatically. Porte Studio builds customer journeys and automated email flows around what your customers actually do.",
+      slug: "customer-journey"
+    }
+  };
+
+  /* Which landing page is this? Detected by the /go/ URL so it survives the
+     page rebuilding its own <head>. Falls back to a meta tag if present. */
+  function landingLabel() {
+    var mp = location.pathname.match(/\/go\/([^\/?#.]+)/);
+    if (mp) {
+      var slug = mp[1];
+      for (var k in LANDING_SEO) { if (LANDING_SEO[k].slug === slug) return k; }
+      return slug.replace(/-/g, " ").replace(/\b\w/g, function (x) { return x.toUpperCase(); });
+    }
+    var m = document.querySelector('meta[name="porte-landing"]');
+    return m ? (m.getAttribute("content") || "").trim() : "";
+  }
+
+  /* Set title + description on the rendered page (crawlers render JS; browsers show it). */
+  function applyLandingSeo(offer) {
+    var seo = LANDING_SEO[offer];
+    if (!seo) return;
+    try {
+      document.title = seo.title;
+      var d = document.querySelector('meta[name="description"]');
+      if (!d) { d = document.createElement("meta"); d.setAttribute("name", "description"); document.head.appendChild(d); }
+      d.setAttribute("content", seo.desc);
+      if (!document.querySelector('meta[name="robots"]')) {
+        var rb = document.createElement("meta"); rb.setAttribute("name", "robots"); rb.setAttribute("content", "noindex, nofollow"); document.head.appendChild(rb);
+      }
+    } catch (e) {}
+  }
+
+  function initLandingForms(offer) {
+    var source = "Landing: " + offer;
+    applyLandingSeo(offer);
+
+    // Find the wrapper label sitting just above a field (Name, Email, etc.)
+    function labelFor(el) {
+      var wrap = el.closest("div");
+      if (!wrap) return "";
+      var lab = wrap.querySelector("div");
+      return lab ? (lab.textContent || "").trim() : "";
+    }
+
+    // Catch the submit in the capture phase, BEFORE the page's own handler,
+    // so the field values are still there to read.
+    function onLandingSubmit(e) {
+      var form = e.target;
+      if (e.composedPath) {                 // find the real <form> even inside a shadow root
+        var path = e.composedPath();
+        for (var p = 0; p < path.length; p++) { if (path[p] && path[p].nodeName === "FORM") { form = path[p]; break; } }
+      }
+      if (!form || form.nodeName !== "FORM" || form.__porteSent) return;
+
+      var controls = form.querySelectorAll("input, select, textarea");
+      if (!controls.length) return;
+
+      var name = "", email = "", business = "", extras = [];
+      for (var i = 0; i < controls.length; i++) {
+        var c = controls[i];
+        var t = (c.type || "").toLowerCase();
+        if (t === "hidden" || t === "submit" || t === "button") continue;
+        if (c.name && /hp|honey/i.test(c.name)) continue; // skip honeypots
+        var val = (c.value || "").trim();
+        var lab = labelFor(c) || c.placeholder || c.name || "";
+        var labL = lab.toLowerCase();
+        if (!email && t === "email") { email = val; continue; }
+        if (!name && /name/.test(labL) && !/business|company/.test(labL)) { name = val; continue; }
+        if (!business && /business|company/.test(labL)) { business = val; continue; }
+        if (val) extras.push((lab ? lab.replace(/\s+/g, " ") + ": " : "") + val);
+      }
+      // If no field was clearly the name, use the first non-empty text box.
+      if (!name) {
+        for (var j = 0; j < controls.length; j++) {
+          if ((controls[j].type || "").toLowerCase() === "text" && (controls[j].value || "").trim()) { name = controls[j].value.trim(); break; }
+        }
+      }
+      // Not enough for a real lead — let the page show its thank-you, but don't send.
+      if (!name || !EMAIL_RE.test(email)) return;
+
+      form.__porteSent = true;
+      var message = extras.join("\n");
+      sendToHubSpot({ name: name, email: email, phone: "", business: business, interest: offer, message: message, source: source });
+      trackLead(source);
+      sendToWeb3Forms({
+        subject: "New landing enquiry — " + offer,
+        name: name, email: email, business: business,
+        interest: offer, message: message, source: source
+      });
+    }
+
+    // Attach now, then re-attach a few times in case the bundled page rebuilds
+    // the document after we first loaded (adding the same handler again is a no-op
+    // while it is still attached, and re-registers it if a rebuild removed it).
+    document.addEventListener("submit", onLandingSubmit, true);
+    var tries = 0;
+    var iv = setInterval(function () {
+      applyLandingSeo(offer);
+      document.addEventListener("submit", onLandingSubmit, true);
+      if (++tries >= 20) clearInterval(iv);   // ~12s safety net
+    }, 600);
+  }
+
   /* ---- run everything once the page is ready ---------------------- */
-  function boot() { loadHubSpot(); loadGA4(); injectPopup(); wireContactForm(); wireBottomCta(); wireTriggers(); cleanLinks(); wireFooter(); autoPopup(); }
+  function boot() {
+    var offer = landingLabel();
+    if (offer) {                         // landing page: tracking + lead capture only
+      loadHubSpot(); loadGA4(); initLandingForms(offer);
+      return;
+    }
+    loadHubSpot(); loadGA4(); injectPopup(); wireContactForm(); wireBottomCta(); wireTriggers(); cleanLinks(); wireFooter(); autoPopup();
+  }
   if (document.readyState !== "loading") boot();
   else document.addEventListener("DOMContentLoaded", boot);
 })();
