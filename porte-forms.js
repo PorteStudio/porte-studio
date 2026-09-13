@@ -546,6 +546,61 @@
     } catch (e) {}
   }
 
+  /* The same branded intro the main site uses: a taupe curtain with the
+     PORTE STUDIO wordmark and a thin line, which then slides up to reveal the
+     page. Replaces the bundler's ugly "PS" splash. Kept on top across the
+     bundled page's document rebuild so there is no flash. */
+  function ensureIntroStyle() {
+    if (document.getElementById("porte-intro-style")) return;
+    var st = document.createElement("style");
+    st.id = "porte-intro-style";
+    st.textContent =
+      "@keyframes porteName{0%{opacity:0;letter-spacing:0.18em}30%{opacity:1;letter-spacing:0.5em}100%{opacity:1;letter-spacing:0.5em}}" +
+      "@keyframes porteLine{0%{transform:scaleX(0)}60%{transform:scaleX(1)}100%{transform:scaleX(1)}}";
+    (document.head || document.documentElement).appendChild(st);
+  }
+
+  function playLandingIntro() {
+    try {
+      if (window.__porteIntro) return;
+      window.__porteIntro = true;
+      if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+      if (!document.querySelector('link[data-porte-font]')) {
+        var lf = document.createElement("link");
+        lf.rel = "stylesheet"; lf.setAttribute("data-porte-font", "1");
+        lf.href = "https://fonts.googleapis.com/css2?family=Marcellus&display=swap";
+        (document.head || document.documentElement).appendChild(lf);
+      }
+
+      var curtain = document.createElement("div");
+      curtain.id = "porte-intro";
+      curtain.style.cssText = "position:fixed;inset:0;z-index:2147483000;background:#7d7367;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;will-change:transform;";
+      curtain.innerHTML =
+        '<div style="font-family:\'Marcellus\',Georgia,serif;color:#efeae3;font-size:clamp(20px,2.6vw,32px);letter-spacing:0.5em;padding-left:0.5em;animation:porteName 1s ease forwards;">PORTE STUDIO</div>' +
+        '<div style="margin-top:26px;width:128px;height:1px;background:rgba(239,234,227,0.7);transform-origin:center;animation:porteLine 1.1s ease forwards;"></div>';
+
+      var start = Date.now(), revealed = false;
+      (function keep() {
+        if (revealed) return;
+        var root = document.body || document.documentElement;
+        if (root) { ensureIntroStyle(); if (curtain.parentNode !== root) root.appendChild(curtain); }
+        var ready = document.querySelector("form, h1");
+        if (ready && Date.now() - start > 300) {   // reveal as soon as the page is ready (no deliberate hold)
+          revealed = true;
+          curtain.style.transition = "transform .55s cubic-bezier(0.76,0,0.24,1)";
+          curtain.style.transform = "translateY(-101%)";
+          setTimeout(function () { if (curtain.parentNode) curtain.parentNode.removeChild(curtain); }, 600);
+          return;
+        }
+        requestAnimationFrame(keep);
+      })();
+
+      // Safety: never leave the curtain up if the page never renders.
+      setTimeout(function () { if (!revealed) { revealed = true; if (curtain.parentNode) curtain.parentNode.removeChild(curtain); } }, 6000);
+    } catch (e) {}
+  }
+
   /* Make the top-left "PORTE STUDIO" logo open the main site (in a new tab, so
      the ad visitor doesn't lose the landing page). */
   function wireLandingLogo() {
@@ -561,10 +616,36 @@
     }
   }
 
+  /* Add an optional PHONE field after EMAIL (these are call-booking pages).
+     The bundled form has no phone input, so we inject one that matches the
+     existing fields by cloning the email field's wrapper. */
+  function injectLandingPhone() {
+    var emails = document.querySelectorAll('input[type="email"]');
+    for (var i = 0; i < emails.length; i++) {
+      var email = emails[i];
+      var form = email.form || email.closest("form");
+      if (!form) continue;
+      if (form.querySelector('input[data-porte-phone]')) continue; // already has exactly one (survives re-renders)
+      var wrap = email.closest("div");
+      if (!wrap || !wrap.parentNode) continue;
+      var clone = wrap.cloneNode(true);
+      var lab = clone.querySelector("div");
+      if (lab) lab.textContent = "PHONE (OPTIONAL)";
+      var inp = clone.querySelector("input");
+      if (!inp) continue;
+      inp.type = "tel";
+      inp.value = "";
+      inp.removeAttribute("required");
+      inp.setAttribute("data-porte-phone", "1");
+      wrap.parentNode.insertBefore(clone, wrap.nextSibling);
+    }
+  }
+
   function initLandingForms(offer) {
     var source = "Landing: " + offer;
     applyLandingSeo(offer);
     wireLandingLogo();
+    injectLandingPhone();
 
     // Find the wrapper label sitting just above a field (Name, Email, etc.)
     function labelFor(el) {
@@ -587,7 +668,7 @@
       var controls = form.querySelectorAll("input, select, textarea");
       if (!controls.length) return;
 
-      var name = "", email = "", business = "", extras = [];
+      var name = "", email = "", business = "", phone = "", extras = [];
       for (var i = 0; i < controls.length; i++) {
         var c = controls[i];
         var t = (c.type || "").toLowerCase();
@@ -597,6 +678,7 @@
         var lab = labelFor(c) || c.placeholder || c.name || "";
         var labL = lab.toLowerCase();
         if (!email && t === "email") { email = val; continue; }
+        if (!phone && (t === "tel" || /phone|mobile/.test(labL))) { phone = val; continue; }
         if (!name && /name/.test(labL) && !/business|company/.test(labL)) { name = val; continue; }
         if (!business && /business|company/.test(labL)) { business = val; continue; }
         if (val) extras.push((lab ? lab.replace(/\s+/g, " ") + ": " : "") + val);
@@ -612,11 +694,11 @@
 
       form.__porteSent = true;
       var message = extras.join("\n");
-      sendToHubSpot({ name: name, email: email, phone: "", business: business, interest: offer, message: message, source: source });
+      sendToHubSpot({ name: name, email: email, phone: phone, business: business, interest: offer, message: message, source: source });
       trackLead(source);
       sendToWeb3Forms({
         subject: "New landing enquiry — " + offer,
-        name: name, email: email, business: business,
+        name: name, email: email, phone: phone, business: business,
         interest: offer, message: message, source: source
       });
     }
@@ -629,6 +711,7 @@
     var iv = setInterval(function () {
       applyLandingSeo(offer);
       wireLandingLogo();
+      injectLandingPhone();
       document.addEventListener("submit", onLandingSubmit, true);
       if (++tries >= 20) clearInterval(iv);   // ~12s safety net
     }, 600);
@@ -638,7 +721,7 @@
   function boot() {
     var offer = landingLabel();
     if (offer) {                         // landing page: tracking + lead capture only
-      loadHubSpot(); loadGA4(); initLandingForms(offer);
+      playLandingIntro(); loadHubSpot(); loadGA4(); initLandingForms(offer);
       return;
     }
     loadHubSpot(); loadGA4(); injectPopup(); wireContactForm(); wireBottomCta(); wireTriggers(); cleanLinks(); wireFooter(); autoPopup();
